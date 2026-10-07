@@ -16,6 +16,5 @@
 
                                                                         How to run: use tampermonkey or anything else to load the mod
 
-                                                                                      The mod is in the src folder
-                                                                            (You can also just use the .js in the main folder)
+                                                                                      The mod is in the megascript.js
 
