@@ -4,7 +4,7 @@ if (container) {
     container.innerHTML += "<input type=color id='test'>" + "<input type=color id='test2'>";
 }
 if (marketcontainer) {
-    container.innerHTML += "<button onclick='openPackthing()'>Pack Opener</button>
+    container.innerHTML += "<button onclick='openPackthing()'>Pack Opener</button>"
 
 const savedColor = localStorage.getItem("background");
 if (savedColor) {
