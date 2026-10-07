@@ -4,6 +4,44 @@ if (container) {
     container.innerHTML += "<input type=color id='test'>" + "<input type=color id='test2'>";
 }
 if (marketcontainer) {
+    container.innerHTML += "<button onclick='openPackthing()'>Pack Opener</button>
+
+const savedColor = localStorage.getItem("background");
+if (savedColor) {
+    const profile = document.querySelector('.arts__profileBody___eNPbH-camelCase');
+    if (profile) profile.style.backgroundColor = savedColor;
+
+    const chat = document.querySelector('.styles__chatContainer___iA8ZU-camelCase');
+    if (chat) chat.style.backgroundColor = savedColor;
+
+    const blooks = document.querySelector('.styles__blooksBackground___3oQ7Y-camelCase');
+    if (blooks) blooks.style.backgroundColor = savedColor;
+
+    const input1 = document.getElementById('test');
+    if (input1) input1.value = savedColor;
+}
+
+const testInput = document.getElementById('test');
+if (testInput) {
+    testInput.addEventListener('input', (event) => {
+        const colr = testInput.value;
+        const profile = document.querySelector('.arts__profileBody___eNPbH-camelCase');
+        if (profile) profile.style.background = colr;
+
+        const chat = document.querySelector('.styles__chatContainer___iA8ZU-camelCase');
+        if (chat) chat.style.background = colr;
+
+        localStorage.setItem("background", colr);
+    });
+}
+
+function openPackthing() {
+    const container = document.querySelector('.styles__infoContainer___2uI-S-camelCase');
+const marketcontainer = document.querySelector('.styles__header___153FZ-camelCase');
+if (container) {
+    container.innerHTML += "<input type=color id='test'>" + "<input type=color id='test2'>";
+}
+if (marketcontainer) {
     container.innerHTML += "<button onclick='let extra_delay = 0;
 
 // === max delay ===
@@ -89,3 +127,27 @@ title.style.fontSize = "22px";
 title.style.textAlign = "center";
 title.textContent = "PACK OPENER";
 panel.appendChild(title);
+}
+
+const savedColor2 = localStorage.getItem("textcol");
+if (savedColor2) {
+    const chatMsg = document.querySelector('.styles__chatMessage___2Z1ZU-camelCase');
+    if (chatMsg) chatMsg.style.color = savedColor2;
+
+    const pageText = document.querySelector('.styles__pageText___1eo7q-camelCase');
+    if (pageText) pageText.style.color = savedColor2;
+
+    const input2 = document.getElementById('test2');
+    if (input2) input2.value = savedColor2;
+}
+
+const test2Input = document.getElementById('test2');
+if (test2Input) {
+    test2Input.addEventListener('input', (event) => {
+        const clor = test2Input.value;
+        document.querySelectorAll('.styles__leftRow___4jCaB-camelCase, .styles__leftRow___4jCaB-camelCase *').forEach(el => {
+            el.style.setProperty('color', `${clor}`, 'important');
+        });
+        localStorage.setItem("textcol", clor);
+    });
+}
