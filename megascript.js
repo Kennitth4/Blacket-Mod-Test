@@ -42,7 +42,7 @@ if (container) {
     container.innerHTML += "<input type=color id='test'>" + "<input type=color id='test2'>";
 }
 if (marketcontainer) {
-    container.innerHTML += "<button onclick='let extra_delay = 0;
+    container.innerHTML += "<button onclick='let extra_delay = 0;>OpenPack</button>"
 
 // === max delay ===
 let max_delay = Object.values(blacket.rarities)
