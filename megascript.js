@@ -309,6 +309,49 @@ Best Pull: ${bestRarity}`;
         });
     }
 
+        const addNavigationButtons = () => {
+        const leftContainer = document.querySelector(
+            '.styles__left___9beun-camelCase'
+        );
+        if (leftContainer && !document.getElementById('your-blooks-button')) {
+    const button = document.createElement('button');
+    button.id = 'your-blooks-button';
+    button.textContent = 'Your Blooks';
+    button.addEventListener('click', () => {
+        window.location.href = '/blooks';
+    });
+    leftContainer.appendChild(button);
+}
+
+const yourBlooksButton = document.getElementById('your-blooks-button');
+if (yourBlooksButton) {
+    yourBlooksButton.hidden = window.location.pathname.replace(/\/+$/, '') === '/blooks';
+}
+
+
+        const numRowContainer = document.querySelector(
+            '.styles__numRow___xh98F-camelCase'
+        );
+        if (numRowContainer && !document.getElementById('blook-viewer-button')) {
+            const button = document.createElement('button');
+            button.id = 'blook-viewer-button';
+            button.textContent = 'Blook Viewer';
+            button.addEventListener('click', () => {
+                window.location.href = '/panel/blooks';
+            });
+            numRowContainer.appendChild(button);
+        }
+    };
+
+    addNavigationButtons();
+
+    const navigationButtonObserver = new MutationObserver(addNavigationButtons);
+    navigationButtonObserver.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+
+
     const observer = new MutationObserver(() => {
         const curText = localStorage.getItem("textcol");
         if (curText) applyTextColor(curText);
