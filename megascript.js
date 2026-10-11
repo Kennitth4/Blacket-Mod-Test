@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         Blacket Mod - Beta
+// @name         Blackfoxet
 // @namespace    http://tampermonkey.net/
-// @version      2026-10-07
-// @description  try to take over the world!
-// @author       You
+// @version      1.0
+// @description  A Blacket mod!
+// @author       Kennitth
 // @match        https://blacket.org/*/
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=blacket.org
 // @grant        none
@@ -14,7 +14,7 @@
     if (infoContainer) infoContainer.innerHTML += "<input type=color id='test'>" + "<input type=color id='test2'>" + "<input type=text id='test3' placeholder='Image URL'>";
 
     const marketContainer = document.querySelector('.styles__header___153FZ-camelCase');
-    if (marketContainer) marketContainer.innerHTML += "<button onclick='OpenPackThing();'>OpenPack</button>";
+    if (marketContainer) marketContainer.innerHTML += "<a onclick='OpenPackThing();'>   Auto Open</a>";
 
     var stats = document.querySelector(
   '.styles__statsContainer___QnrRB-camelCase'
@@ -30,6 +30,8 @@ if (!stats) {
     input.id = 'test4';
     input.type = 'text';
     input.placeholder = 'Search usernames';
+    input.style.backgroundColor = '#2f2f2f';
+    input.style.borderColor = '#2f2f2f';
     stats.appendChild(input);
   }
 
@@ -149,23 +151,36 @@ if (usernameviewer) {
 
   if (!leftRow || !profileBody) return;
 
+  const storageKey = 'customAchievementsData';
   const originalNodes = Array.from(profileBody.childNodes);
   let isOpen = false;
-
-  // Tracked in memory only (resets on page refresh)
-  let state = {
-    packOpens: 0,
-    unlocked: []
-  };
 
   const achievements = [
     { id: 'first-pack', name: 'Open your first pack', goal: 1 },
     { id: 'ten-packs', name: 'Open 10 packs', goal: 10 },
-    { id: 'fifty-packs', name: 'Open 50 packs', goal: 50 }
+    { id: 'fifty-packs', name: 'Open 50 packs', goal: 50 },
+    {id: '10000-packs', name: 'Open 10k packs', goal: 10000 }
   ];
 
-  const button = document.createElement('button');
+  const loadData = () => {
+    try {
+      const data = JSON.parse(localStorage.getItem(storageKey) || '{}');
+      return {
+        packOpens: Number(data.packOpens) || 0,
+        unlocked: Array.isArray(data.unlocked) ? data.unlocked : []
+      };
+    } catch (e) {
+      return { packOpens: 0, unlocked: [] };
+    }
+  };
+
+  const saveData = (data) => localStorage.setItem(storageKey, JSON.stringify(data));
+
+  let state = loadData();
+
+  const button = document.createElement('a');
   button.textContent = 'Achievements';
+  button.classList.add('styles__pageButton___1wFuu-camelCase');
   leftRow.appendChild(button);
 
   const panel = document.createElement('div');
@@ -201,13 +216,14 @@ if (usernameviewer) {
 
         if (typeof blacket !== 'undefined' && blacket.createToast) {
           blacket.createToast({
-            title: "Achievement",
-            message: "" + item.name
+            title: "Achievement Unlocked!",
+            message: item.name
           });
         }
       }
     });
 
+    saveData(state);
     if (isOpen) render();
   }
 
@@ -553,4 +569,11 @@ if (blookviewer) {
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
+
+    document.getElementById('test').style.borderColor = '#2f2f2f';
+    document.getElementById('test').style.backgroundColor = '#2f2f2f';
+    document.getElementById('test2').style.borderColor = '#2f2f2f';
+    document.getElementById('test2').style.backgroundColor = '#2f2f2f';
+    document.getElementById('test3').style.borderColor = '#2f2f2f';
+    document.getElementById('test3').style.backgroundColor = '#2f2f2f';
 })();
