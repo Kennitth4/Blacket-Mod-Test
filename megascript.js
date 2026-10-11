@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         New Userscript
+// @name         Blacket Mod - Beta
 // @namespace    http://tampermonkey.net/
 // @version      2026-10-07
 // @description  try to take over the world!
@@ -55,6 +55,191 @@ if (!stats) {
 
   input.oninput();
 }
+
+    const usernameviewer = document.getElementById("test4");
+if (usernameviewer) {
+    usernameviewer.hidden = window.location.pathname.replace(/\/+$/, '') !== '/stats';
+}
+
+    (function () {
+  var cardSelector = '.styles__friendsFriend___rj42a-camelCase';
+  var usernameSelector = '.styles__friendsUsername___904Ca-camelCase';
+  var pinnedKey = 'pinnedFriendUsername';
+  var displacedKey = 'displacedFriendUsername';
+
+  function getUsername(card) {
+    var username = card.querySelector(usernameSelector);
+    return username ? username.textContent.trim() : '';
+  }
+
+  function swapCards(a, b) {
+    if (!a || !b || a === b || a.parentElement !== b.parentElement) return;
+
+    var marker = document.createComment('swap-position');
+    var parent = a.parentElement;
+
+    parent.insertBefore(marker, a);
+    parent.replaceChild(a, b);
+    parent.replaceChild(b, marker);
+  }
+
+  function applyPin() {
+    var pinnedName = localStorage.getItem(pinnedKey);
+    var displacedName = localStorage.getItem(displacedKey);
+    var cards = Array.from(document.querySelectorAll(cardSelector));
+
+    cards.forEach(function (card) {
+      if (pinnedName && getUsername(card) === pinnedName) {
+        card.style.setProperty('border', '2px solid gold', 'important');
+      } else {
+        card.style.removeProperty('border');
+      }
+    });
+
+    if (!pinnedName) {
+      var oldPinned = cards.find(function (card) {
+        return getUsername(card) === displacedName;
+      });
+      var oldFirst = cards[0];
+
+      if (oldPinned && oldFirst && oldPinned !== oldFirst) {
+        swapCards(oldPinned, oldFirst);
+      }
+      localStorage.removeItem(displacedKey);
+      return;
+    }
+
+    var pinnedCard = cards.find(function (card) {
+      return getUsername(card) === pinnedName;
+    });
+    var firstCard = cards[0];
+
+    if (!pinnedCard || !firstCard || pinnedCard === firstCard) return;
+
+    if (!displacedName) {
+      localStorage.setItem(displacedKey, getUsername(firstCard));
+    }
+
+    swapCards(pinnedCard, firstCard);
+  }
+
+  document.addEventListener('contextmenu', function (event) {
+    var card = event.target.closest(cardSelector);
+    if (!card) return;
+
+    event.preventDefault();
+    var name = getUsername(card);
+    if (!name) return;
+
+    if (localStorage.getItem(pinnedKey) === name) {
+      localStorage.removeItem(pinnedKey);
+    } else {
+      localStorage.setItem(pinnedKey, name);
+      localStorage.removeItem(displacedKey);
+    }
+
+    applyPin();
+  });
+
+  applyPin();
+
+(() => {
+  const leftRow = document.querySelector('.styles__leftRow___4jCaB-camelCase');
+  const profileBody = document.querySelector('.arts__profileBody___eNPbH-camelCase');
+
+  if (!leftRow || !profileBody) return;
+
+  const originalNodes = Array.from(profileBody.childNodes);
+  let isOpen = false;
+
+  // Tracked in memory only (resets on page refresh)
+  let state = {
+    packOpens: 0,
+    unlocked: []
+  };
+
+  const achievements = [
+    { id: 'first-pack', name: 'Open your first pack', goal: 1 },
+    { id: 'ten-packs', name: 'Open 10 packs', goal: 10 },
+    { id: 'fifty-packs', name: 'Open 50 packs', goal: 50 }
+  ];
+
+  const button = document.createElement('button');
+  button.textContent = 'Achievements';
+  leftRow.appendChild(button);
+
+  const panel = document.createElement('div');
+  panel.style.cssText = 'width:100%; padding:16px; box-sizing:border-box; color: #fff; font-family: sans-serif;';
+
+  const heading = document.createElement('h2');
+  heading.textContent = 'Achievements';
+  heading.style.color = '#f5c542';
+
+  const progress = document.createElement('p');
+  const list = document.createElement('div');
+  panel.append(heading, progress, list);
+
+  function render() {
+    progress.textContent = `Packs opened: ${state.packOpens}`;
+    list.innerHTML = '';
+
+    achievements.forEach(item => {
+      const unlocked = state.unlocked.includes(item.id);
+      const row = document.createElement('div');
+      row.textContent = `${unlocked ? '🏆' : '🔒'} ${item.name}`;
+      row.style.cssText = `padding:12px; margin-top:8px; border:1px solid ${unlocked ? '#f5c542' : '#444'}; border-radius:6px; background: ${unlocked ? 'rgba(245, 197, 66, 0.1)' : 'transparent'};`;
+      list.appendChild(row);
+    });
+  }
+
+  function count() {
+    state.packOpens++;
+
+    achievements.forEach(item => {
+      if (state.packOpens >= item.goal && !state.unlocked.includes(item.id)) {
+        state.unlocked.push(item.id);
+
+        if (typeof blacket !== 'undefined' && blacket.createToast) {
+          blacket.createToast({
+            title: "Achievement",
+            message: "" + item.name
+          });
+        }
+      }
+    });
+
+    if (isOpen) render();
+  }
+
+  button.onclick = (e) => {
+    e.preventDefault();
+    isOpen = !isOpen;
+    if (isOpen) {
+      render();
+      profileBody.replaceChildren(panel);
+    } else {
+      profileBody.replaceChildren(...originalNodes);
+    }
+  };
+
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.styles__packContainer___3RwSU-camelCase') && typeof blacket !== 'undefined' && blacket.openPack) {
+      count();
+      return;
+    }
+
+    const btn = e.target.closest('button, a, [role="button"]');
+    if (btn && btn.textContent.toLowerCase().includes('open') && btn.textContent.toLowerCase().includes('pack')) {
+      count();
+    }
+  });
+})();
+
+
+  var observer = new MutationObserver(applyPin);
+  observer.observe(document.body, { childList: true, subtree: true });
+})();
+
 
 
     window.OpenPackThing = function() {
@@ -341,6 +526,12 @@ if (yourBlooksButton) {
             });
             numRowContainer.appendChild(button);
         }
+
+            const blookviewer = document.getElementById('blook-viewer-button');
+if (blookviewer) {
+    blookviewer.hidden = window.location.pathname.replace(/\/+$/, '') !== '/blooks';
+}
+
     };
 
     addNavigationButtons();
